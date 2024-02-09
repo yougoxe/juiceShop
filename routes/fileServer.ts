@@ -29,7 +29,6 @@ module.exports = function servePublicFiles () {
 
       challengeUtils.solveIf(challenges.directoryListingChallenge, () => { return file.toLowerCase() === 'acquisitions.md' })
       verifySuccessfulPoisonNullByteExploit(file)
-
       res.sendFile(path.resolve('ftp/', file))
     } else {
       res.status(403)
@@ -50,6 +49,7 @@ module.exports = function servePublicFiles () {
   }
 
   function endsWithAllowlistedFileType (param: string) {
+    param = security.cutOffPoisonNullByte(param)
     return utils.endsWith(param, '.md') || utils.endsWith(param, '.pdf')
   }
 }
