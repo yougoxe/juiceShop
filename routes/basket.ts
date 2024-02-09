@@ -14,12 +14,13 @@ const challenges = require('../data/datacache').challenges
 
 module.exports = function retrieveBasket () {
   return (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id
+    const user = security.authenticatedUsers.from(req)
+    const id = user.bid;
     BasketModel.findOne({ where: { id }, include: [{ model: ProductModel, paranoid: false, as: 'Products' }] })
       .then((basket: BasketModel | null) => {
         /* jshint eqeqeq:false */
         challengeUtils.solveIf(challenges.basketAccessChallenge, () => {
-          const user = security.authenticatedUsers.from(req)
+          
           return user && id && id !== 'undefined' && id !== 'null' && id !== 'NaN' && user.bid && user.bid != id // eslint-disable-line eqeqeq
         })
         if (((basket?.Products) != null) && basket.Products.length > 0) {
